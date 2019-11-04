@@ -7,13 +7,14 @@ public class Contract {
     protected LocalDateTime start_date;
     protected LocalDateTime end_date;
     protected double cost;  //this will hopefully get used for all subclasses in their own lil way
-    protected double purchase_price;
+    double purchase_price;
     
-    public Contract (LocalDateTime i_start, LocalDateTime i_end, double i_cost, double purchase_price) {
+    public Contract (LocalDateTime i_start, LocalDateTime i_end, double i_cost) {
         
         start_date = i_start;
         end_date = i_end;
         cost = i_cost;
+        purchase_price = 100.;
         
         
     }
@@ -42,4 +43,7 @@ public class Contract {
         return purchase_price;
     }
     
+    void setPurchasePrice(double in_price) {
+        purchase_price = in_price;
+    }
 }

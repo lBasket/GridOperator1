@@ -100,14 +100,14 @@ public class Grid {
                 temp.set(1, gt.getDate().toString()); // Insert the datetime into the returned array
                 interval_load = (double) temp.get(8);
                 gen_rows.add(temp); //generators take the load then do their thing and give it back
-//                System.out.println("gen_rows: "+gen_rows);
             }
         }
         
         
         if (interval_load > 0.0) {
             System.out.println("Unsatisfied load "+interval_load);
-            missedLoad(interval_load, i_pc);
+            //TODO: Not sure why, but this causes bugs when activated, especially in the first hour
+//            missedLoad(interval_load, i_pc);
         }
         
         
@@ -138,6 +138,7 @@ public class Grid {
         double gas_mmbtu = 0.;
         ArrayList<NGContract> contracts = i_pc.getGasContracts();
         
+        //Sum up mmbtu usage by GTs
         for (ArrayList outlist: gen_rows) {
             for (Object inlist : outlist) {
                 ArrayList list = (ArrayList) inlist;
@@ -147,14 +148,17 @@ public class Grid {
             }
         }
         
-        for (NGContract ng : i_pc.getGasContracts()) {
+        //Cycle all contracts, use contracts to pay for gas (and pay minimum cost if not using gas) before buying on spot market
+        for (NGContract ng : contracts) {
             double[] temp = ng.getCost(gas_mmbtu, intervals);
             cost += temp[0]; 
             gas_mmbtu = temp[1];
         }
         
-        cost = cost + gas_mmbtu * i_fm.ngPrice(); //if mmBtus left after contracts, pay spot price
+        //if mmBtus left after contracts, pay spot price
+        cost = cost + gas_mmbtu * i_fm.ngPrice(); 
         
+        //Return the $$ cost of all gas after contracts & spot market
         return cost;
         
         

@@ -1,3 +1,4 @@
+
 package bskt.ui;
 
 import bskt.sim.Owner;
@@ -7,13 +8,14 @@ import java.util.Scanner;
 
 public class GenOptionsUI {
     Owner pc;
+    Scanner scnr;
     
     public GenOptionsUI (Owner i_pc) {
         pc = i_pc;
     }
     
     public void menu () {
-        Scanner scanner = new Scanner(System.in);
+        scnr = new Scanner(System.in);
         int input = -1;
                 
         String menu_str = "What you wanna see?\r\n" 
@@ -24,7 +26,7 @@ public class GenOptionsUI {
         System.out.println(menu_str);
         
         try {
-            String s_input = scanner.next();
+            String s_input = scnr.next();
             input = Integer.parseInt(s_input);
         }
         catch (NumberFormatException e) {
@@ -79,9 +81,11 @@ public class GenOptionsUI {
                          + "4. $300,000: 24 Month for a 20% discount, min/max mmBtu: 30k/40k\n"
                         );
         int check = 0;
+        int input = 0;
         while(check==0) {        
             try {
-                String s_input = scanner.next();
+                
+                String s_input = scnr.next();
                 input = Integer.parseInt(s_input);
             }
             catch (NumberFormatException e) {

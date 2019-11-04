@@ -7,12 +7,12 @@ public class NGContract extends Contract{
     private double max; // max/min of contracted mmbtus [normally they're a range]
     
     
-    public NGContract (LocalDateTime i_start, LocalDateTime i_end, double i_cost, double i_min, double i_max, double purchase_price) {
-        super( i_start, i_end, i_cost, purchase_price);
+    public NGContract (LocalDateTime i_start, LocalDateTime i_end, double i_cost, double i_min, double i_max, double i_purchase_price) {
+        super( i_start, i_end, i_cost);
         
         min = i_min;
         max = i_max;
-        
+        setPurchasePrice(i_purchase_price);
     }
     
     @Override

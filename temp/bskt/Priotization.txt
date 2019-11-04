@@ -1,0 +1,55 @@
+==========TOP ITEMS==========
+1. Gas Turbine Maint Mechanic
+    -Implement on GTs
+    -Create UI for Repairs (Finish GenOptionsUI.java)
+
+
+==========ON DECK ITEMS==========
+
+
+==========FUTURE IDEAS==========
+*Charting things for you
+    -Could design a BasketChartEngine(tm) for use for this?
+*Round all numbers
+*better Dynamic Load
+*Competitors
+    -They could be easily enticed to build generation by the missed load mechanic maybe?
+*Load Growth
+    -Motivated by certain factors 
+        +PC's[+competition] capacity vs. normal load 
+        +Industry vs. residential (industry attracted by cheap electric prices, residential attracted by industry, economies of scale attract cheap electric feedback loop)
+*Transmission
+*Interfaces
+*New PMs
+    -WT
+        +Historic Wind Data, or simple fake wind generator?
+        +Location information when building?
+    -Solar
+        +Solar Insolation; can probably be better modeled
+        +Location information when building?   
+    -ST
+        +Probably will be coal only
+        +Coal units will need on-site storage
+            +implement minimum mandatory onsite storage fines?
+    -Battery
+    -Hydro
+    -LFG
+    -IC
+    -CC
+*Coal Contracts
+*Actual UI
+*Revamp Building Generator process
+    -Building times
+    -Permitting Process
+*PPAs
+
+?RECs
+?Real life data inputs
+
+??Graphics
+
+==========DONE==========
+
+11/3/2019 - Testing NG Contracts
+                -Tested all but if mmBTU exceeds contract
+                -Implement Charging for purchase

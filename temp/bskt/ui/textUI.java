@@ -174,21 +174,21 @@ public class textUI {
             ArrayList<ArrayList<ArrayList<Object>>> returned = grd.passTime(gt, fm, pc);
             ld_data.add(returned.get(0)); 
             gen_data.add(returned.get(1)); //for some reason this is getting an array of 2 arrays the first time??
-            System.out.println("returned gen");
-            System.out.println(returned.get(1));
         }
         
         double mwh = rollup(gen_data, 3);
         double btu_burnt = rollup(gen_data, 4);
         double fuel_cost = grd.NGFuelCost(gen_data, pc, fm, intervals/12);
-        double profit = rollup(gen_data, 5) - fuel_cost;  // revenue - gas cost
+        double revenues = rollup(gen_data, 5);
+        System.out.println("revenues was" + revenues);
+        System.out.println("fuel cost was:" + fuel_cost);
+        double profit = revenues - fuel_cost;  // revenue - gas cost
         
         // Write rows to the SQLite db
         long temp = System.currentTimeMillis() / 1000;
         log.insertGen(gen_data);
         System.out.println(gen_data);
         log.insertLoad(ld_data);
-        System.out.println("writerows: "+((System.currentTimeMillis()/1000) - temp));
 
         //Pay player/ take his moneys
         //this is going back into generators so i can have multiple owners on a grid
@@ -196,7 +196,8 @@ public class textUI {
         pc.transaction(profit);
         
 
-        System.out.println(gt.getDate()+": Generated "+mwh+"MWh for $"+profit+" burnt mmbtu: "+btu_burnt);
+        System.out.println("It is now " + gt.getDate()+": Generated "+mwh+"MWh for $"+profit+" burnt mmbtu: "+btu_burnt);
+        System.out.println("pc now has: " + pc.getCash());
 
     }
 
@@ -262,7 +263,7 @@ public class textUI {
                 case 3:
                     NGContract newcontract = (NGContract) contract_store.openStore(gt, fm); //if i have memory issues i think this can be initialized and ignored to be GCed here down the road
                     try {
-                        pc.transaction(newcontract.getPurchasePrice());
+                        pc.transaction(-1. * newcontract.getPurchasePrice()); //multiply by -1 to charge the pc since the cost is inherently stored postive
                         pc.addContract( newcontract, "NG");
                     } catch (NullPointerException e) {}
                     return;
@@ -291,6 +292,7 @@ public class textUI {
                 default:
                     break;
             }
+            break;
 
         }
     }

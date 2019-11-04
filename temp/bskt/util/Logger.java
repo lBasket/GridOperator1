@@ -37,7 +37,8 @@ public class Logger {
             System.out.println("except");
             System.out.println(e.getMessage());
         }
-        String url = "jdbc:sqlite:C:\\Users\\Basket\\Documents\\temp\\bskt\\db\\"+fileName+".db";
+        //TODO Check if path exists, if not, create it. Instead of hardcoding & failing
+        String url = "jdbc:sqlite:C:\\Users\\Basket\\Documents\\Java\\Griddbs\\"+fileName+".db";
 
         try {
             conn = DriverManager.getConnection(url);
