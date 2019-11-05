@@ -1,6 +1,11 @@
 ==========TOP ITEMS==========
 1. Gas Turbine Maint Mechanic
-    -Implement on GTs
+    -Change EOH Calculation EVERYWHERE to be 5minutely, not hourly
+    -Load Factor revamp
+        --Make dynamic (More temp = faster ramprate, faster maint req, change max output, maybe more emissions?) EOH scaling formula
+    -Implement normal(no steam inj), wet control curve (same output, steam inj, incr EOH), dry control curve (less output, steam inj, same EOH)
+
+2. GT Maint UI
     -Create UI for Repairs (Finish GenOptionsUI.java)
 
 
@@ -8,6 +13,8 @@
 
 
 ==========FUTURE IDEAS==========
+*Documentation
+    -This could be comments at the top of files, but if I go for it, maybe it's better just to make it's own freaking file or something?
 *Charting things for you
     -Could design a BasketChartEngine(tm) for use for this?
 *Round all numbers
@@ -22,10 +29,14 @@
 *Interfaces
 *New PMs
     -WT
-        +Historic Wind Data, or simple fake wind generator?
+        +Wind Model, time/region/season/temperature based
+            -Temp model?
+            -Weather events - tied with solar
         +Location information when building?
     -Solar
-        +Solar Insolation; can probably be better modeled
+        +Solar sunlight model
+            -Obviously time based to begin with
+            -Weather events - This should be tied with wind
         +Location information when building?   
     -ST
         +Probably will be coal only
@@ -42,6 +53,8 @@
     -Building times
     -Permitting Process
 *PPAs
+*Emissions Charging (Making Steam Inj a real choice in GTs)
+*Peaking vs nonpeaking capabilities
 
 ?RECs
 ?Real life data inputs
@@ -49,7 +62,8 @@
 ??Graphics
 
 ==========DONE==========
-
+11/4/2019 - Documented GT Maint Ideas
+          - Planned out changes (fixes) & new features for GT Maint          
 11/3/2019 - Testing NG Contracts
                 -Tested all but if mmBTU exceeds contract
                 -Implement Charging for purchase

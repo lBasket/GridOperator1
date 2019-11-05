@@ -5,9 +5,30 @@ import bskt.sim.Owner;
 import bskt.util.GridTime;
 import java.util.ArrayList;
 //These are obviously going to be NG fired only...
+/*
 
+*/
 public class GasTurbine extends Generator {
 //    private static String PM = "GT";
+    /*
+    MAINTENENCE MODEL: Maint reqs are measured by EOH - Equiv Operating Hours. Normal operating load is 1 EOH/hr, but variables can affect this to be higher or lower depending on the conditions the GT runs
+    When time passed: EOH +- Fuel Factor * Load Factor * Steam Inj
+    If Load Factor > 1, +1.25% per interval of ramping capability
+    If Steam Inj > 1, +1.25% per interval of ramping capability
+        TODO: 1.01 Steam Inj = 2.0 Steam Inj. Either make this more dynamic, or research Steam Inj and see if it's an off/on deal
+    
+    Starts/Trips: GTs face extra maintence penalty when first starting up as well as when 'tripping' - going below a minimum load threshold when the GT must abruptly turn off
+        Starts: 'flag' on_startup set if 'prev_load_perc' falls under the min load threshold, indicating the GT 'trips' and shuts down abruptly
+                when 'prev_load_perc' =0, and on_startup =true, then startup EOH is added to counter, and GT starts ramping and stays "on startup"
+                    one 'prev_load_perc' passes min load threshold, on_startup =false, as the GT has finished starting up and is now running normally
+    Trips:    if 'prev_load_perc' dips below min load threshold, 'prev_load_perc' is set to 0 (abrupt shut off) and tripEOH added to counter, on_startp =true, because GT now must restart
+    
+    Oper_modes:
+    [0]: Fuel Factor - NOT CURRENTLY USED really, added maintence for using shitty fuel (DFO 1.5, Crude 2-3, Residual 3-4)
+                    TODO: Find use or remove
+    [1]: Load Factor - This is to model increasing temperature to increasing ramprate/ maximum output. Increases Maint schedules (more EOH when active)
+    [2]: Steam Injection - Can inject steam, reduce output, to reduce emissions(dry control curve), or inject, keep same output, reduce emissions, and reduce emissions(wet control curve)
+    */
     
     private ArrayList<double[]> oper_modes; //[0] = Fuel Factor, [1] = Load Factor, [2] = Steam Injection
     private double[] cur_oper_mode;     //opermode currently in use
@@ -15,7 +36,7 @@ public class GasTurbine extends Generator {
     double[] cur_opermode;
     
     //Maintenence variables
-    private double EOH;
+    private double EOH;         //"Equivalant Operating Hours"
     private double startEOH;    //just going to double this if on peak
     private double tripEOH;     //just going to double this if on peak
     private boolean on_startup; //true if starting, false if not. for checking for trips
@@ -40,7 +61,7 @@ public class GasTurbine extends Generator {
         super(0.98*i_nameplate , 1.02*i_nameplate , i_name, 7907., 53.07,
              (i_nameplate / 1200), i_owner, 0.);
 //        Set up starting Operating Modes
-        oper_modes = new ArrayList<double[]>();
+        oper_modes = new ArrayList<>();
         PM = "GT";
         cur_oper_mode = new double[3]; // TODO: Figure out how the fuck you instantiate a full array
         cur_oper_mode[0] = 1.;
@@ -180,9 +201,6 @@ public class GasTurbine extends Generator {
         EOH = 0;
     }
 
-//    public String getCurrOperMode() {
-//        return ;
-//    }
 
     public void checkMaint () {
         
