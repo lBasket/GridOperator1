@@ -29,17 +29,13 @@ public class GridTime {
         return curdate.getMinute();
     }
     
-    
-    
-    
     public void next() {
         curdate = curdate.plusMinutes(5);
     }
     
-    
     public String getSeason() {
-        int cur_month = curdate.getMonth().getValue();//was Month
-        if (cur_month >= 5 && cur_month < 10 ) {
+        int cur_month = curdate.getMonth().getValue();
+        if (cur_month >= 5 && cur_month <= 10 ) {
             return "Summer";
         }
         else return "Winter";

@@ -1,32 +1,64 @@
 ==========TOP ITEMS==========
 1. Gas Turbine Maint Mechanic
-    -Change EOH Calculation EVERYWHERE to be 5minutely, not hourly
     -Load Factor revamp
         --Make dynamic (More temp = faster ramprate, faster maint req, change max output, maybe more emissions?) EOH scaling formula
-    -Implement normal(no steam inj), wet control curve (same output, steam inj, incr EOH), dry control curve (less output, steam inj, same EOH)
+        I think it's best to do a function that will in the future support a sort of 'slider' mechanic - can slide temperatures and watch EOH/load% change.
+        Temperature should be calculated and allowed to slide between right above trip load perc, and 110% load perc
+                *1. Determine formula to relate temp, EOH, peak factor, and load % 11/5/2019
+                *2. Create variables to store current temp, max load %, and EOH factor affected by the Load Factor 11/5/2019
+                *3. Create getter method for LF related variables 11/5/2019
+                *4. adjust maxload (multiplicitly, as is %) in generate method using maxload 11/5/2019
+                *5. use correct EOH variable lf_EOH_adj in generate method 11/5/2019
+                *6. use lf_peak_fact_adj to adjust rampperc in generate method 11/5/2019
+            X. TESTY TESTY
+
+    -Implement Steam Injections
+        --normal(no steam inj), wet control curve (same output, steam inj, incr EOH), dry control curve (less output, steam inj, same EOH)
+        This is going to be 3 settings, so a lot easier. It should be set up exactly like the load factor, GT should only need getters and setters and the UI should do the rest
+                   | output | Emiss | EOH |
+            Normal |   -    |   -   |  -  |
+            Wet:   |   -    |   V   |  ^  |
+            Dry:   |   V    |   V   |  -  |
+        1. Determine the % output reduction for dry, how to set up a shell for emiss reduction, and what EOH to increase for wet
+        2. Create variables to hold output reduction, emiss reduction (even for shell), EOH adj
+        3. Create setter method to set all 3 vars
+        4. Create gtter method for all 3 vars
+        5. implement output reduction in generate
+        6. stick comment or something in generate about emiss adjuster, I know theres a comment section int here somewhere
+        7. implement new EOH variable in passTime
+        X. TESTY TESTY
+    -Implement Fuel Factor
+        --Options between NG, DFO, Crude, and Residual
+        Fuels are well-defined already: they cause different EOH effects.
+            NG = 1, DFO = 1.5, Crude = 2.5, Residual = 3.5
+            I will need to find a way to A. exclude from NG contracts (might be difficult hee hee since they're charged seperate of the GT. I know it runs on PM, will need to be changed to fuel (this is good, allows ICs down the road to particiapte in NG Contracts))
+                                         B. Price out the other fuels dynamically. Or just use dummy constant returns in fuelmarket, since thats all NG does til thats modeled
+                                         C. Attempt to leave room for emissions changes based on fueltype used, since thats coming soon and def should be affected by this
+        
 
 2. GT Maint UI
     -Create UI for Repairs (Finish GenOptionsUI.java)
+            GT Load Factor: Create method to change the slider; input temp, output max % & EOH factor. this should just need getters & setters from GT; save old config on start in order to 'cancel 'changes
 
 
 ==========ON DECK ITEMS==========
+*Documentation
+    -This could be comments at the top of files, but if I go for it, maybe it's better just to make it's own freaking file or something?
+*Emissions mechanic
+    -Emissions Charging (Making Steam Inj a real choice in GTs)
+    -Emission Controls on generators
+    -not sure if I should do a $$ charge or regulations that change over time and you get fined for not complying. the latter sounds more fun but harder
 
 
 ==========FUTURE IDEAS==========
-*Documentation
-    -This could be comments at the top of files, but if I go for it, maybe it's better just to make it's own freaking file or something?
-*Charting things for you
-    -Could design a BasketChartEngine(tm) for use for this?
-*Round all numbers
 *better Dynamic Load
-*Competitors
-    -They could be easily enticed to build generation by the missed load mechanic maybe?
+*Revamp Building Generator process
+    -Building times
+    -Permitting Process
 *Load Growth
     -Motivated by certain factors 
         +PC's[+competition] capacity vs. normal load 
         +Industry vs. residential (industry attracted by cheap electric prices, residential attracted by industry, economies of scale attract cheap electric feedback loop)
-*Transmission
-*Interfaces
 *New PMs
     -WT
         +Wind Model, time/region/season/temperature based
@@ -41,20 +73,25 @@
     -ST
         +Probably will be coal only
         +Coal units will need on-site storage
+            +Coal Contracts
             +implement minimum mandatory onsite storage fines?
     -Battery
     -Hydro
     -LFG
     -IC
     -CC
-*Coal Contracts
-*Actual UI
-*Revamp Building Generator process
-    -Building times
-    -Permitting Process
+*Fuels Market Enhancement
+    -NG Market
+    -Coal Market
+    -??
+*Transmission - I really need a strong gen/load base to stick transmission in the middle honestly
+    -Interfaces
+*Competitors
+    -They could be easily enticed to build generation by the missed load mechanic maybe?
 *PPAs
-*Emissions Charging (Making Steam Inj a real choice in GTs)
-*Peaking vs nonpeaking capabilities
+*Charting things for you
+    -Could design a BasketChartEngine(tm) for use for this? nah prolly overkill
+*Actual UI
 
 ?RECs
 ?Real life data inputs
@@ -62,8 +99,14 @@
 ??Graphics
 
 ==========DONE==========
-11/4/2019 - Documented GT Maint Ideas
-          - Planned out changes (fixes) & new features for GT Maint          
-11/3/2019 - Testing NG Contracts
+11/5/2019   - Change EOH Calculation EVERYWHERE to be 5minutely, not hourly
+            -2k lines of code
+
+11/4/2019   - Documented GT Maint Ideas
+            - Planned out changes (fixes) & new features for GT Maint          
+
+11/3/2019   -Returned to project
+                -Large planning session including maintenence, making compilable again, TOD0ing bugs, random ideas
+            - Testing NG Contracts
                 -Tested all but if mmBTU exceeds contract
                 -Implement Charging for purchase

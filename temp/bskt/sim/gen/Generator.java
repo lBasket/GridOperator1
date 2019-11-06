@@ -31,7 +31,6 @@ public class Generator {
                           1. ramprate should be decided by PM subclass
                           2. Heatrate at first will be average PM from here(2016!) "86"
                           3. Emission Factor will be fuel based from here (2016) https://www.eia.gov/electricity/annual/html/epa_a_03.html
-                          4. Feed in nameplate, summer/winter are PM 
                           */
         id = nextid.incrementAndGet();
         PM = "generic";

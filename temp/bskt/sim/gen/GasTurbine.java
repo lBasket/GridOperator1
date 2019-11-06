@@ -4,6 +4,7 @@ import bskt.sim.FuelMarket;
 import bskt.sim.Owner;
 import bskt.util.GridTime;
 import java.util.ArrayList;
+//import Precision;
 //These are obviously going to be NG fired only...
 /*
 
@@ -27,7 +28,8 @@ public class GasTurbine extends Generator {
     [0]: Fuel Factor - NOT CURRENTLY USED really, added maintence for using shitty fuel (DFO 1.5, Crude 2-3, Residual 3-4)
                     TODO: Find use or remove
     [1]: Load Factor - This is to model increasing temperature to increasing ramprate/ maximum output. Increases Maint schedules (more EOH when active)
-    [2]: Steam Injection - Can inject steam, reduce output, to reduce emissions(dry control curve), or inject, keep same output, reduce emissions, and reduce emissions(wet control curve)
+            
+    [2]: Steam Injection - Can inject steam, reduce output, to reduce emissions, same EOH(dry control curve), or inject, keep same output, reduce emissions, and increase EOH(wet control curve)
     */
     
     private ArrayList<double[]> oper_modes; //[0] = Fuel Factor, [1] = Load Factor, [2] = Steam Injection
@@ -46,6 +48,12 @@ public class GasTurbine extends Generator {
     private double hgp_cnt;  //counter of EOH left
     private double major_cnt;  //counter of EOH left
     private double trip_perc;
+    //these are for loadfactor changes
+    private double lf_temp;
+    private double lf_maxload_adj;
+    private double lf_EOH_adj;
+    private double lf_peak_fact_adj;
+            
     
 
     
@@ -59,7 +67,7 @@ public class GasTurbine extends Generator {
         */              
 
         super(0.98*i_nameplate , 1.02*i_nameplate , i_name, 7907., 53.07,
-             (i_nameplate / 1200), i_owner, 0.);
+             (1200 / i_nameplate), i_owner, 0.);
 //        Set up starting Operating Modes
         oper_modes = new ArrayList<>();
         PM = "GT";
@@ -91,7 +99,7 @@ public class GasTurbine extends Generator {
     public ArrayList<Object> passTime(double i_load, GridTime gt, double elec_price, FuelMarket i_fm) {
             ArrayList<Object> super_result = super.passTime( i_load, gt, elec_price, i_fm);            
             
-            EOH += cur_opermode[0] * cur_opermode[1] * cur_opermode[2];
+            EOH += (cur_opermode[0] * lf_EOH_adj * cur_opermode[2]) / 12.; //loadfactor EOH has been replaced with its var
             
             return super_result;
             
@@ -102,12 +110,9 @@ public class GasTurbine extends Generator {
     protected double generate(double i_load, double cap, GridTime gt) {
         double peak_factor = 0.;   //extra ramping factors at price of more EOH
         double steam_factor = 0.;
+        cap = cap * lf_maxload_adj; //adjust capacity based on maintenence factors lf_maxload_adj is a percentage
         
-        //Determine if peaking, get 1.25% bonus currently on simple current model
-        if ( cur_opermode[1] > 1.) {
-            peak_factor = 1.25;
-        }
-//        System.out.println("peakfactor:"+peak_factor);
+
         //Determine if steam injection, get 1.25% bonus currently on simple current model
         if ( cur_opermode[2] > 1.) {
             steam_factor = 1.25;
@@ -126,7 +131,7 @@ public class GasTurbine extends Generator {
         if (prev_load_perc >= trip_perc || on_startup ) {   //either above trip level or starting up
              
             if (i_load >= max_boundary) {
-                prev_load_perc = Math.min(1., prev_load_perc + rampperc + peak_factor + steam_factor);
+                prev_load_perc = Math.min(1., prev_load_perc + rampperc + lf_peak_fact_adj + steam_factor);
                 i_load -= max_boundary;
             }
             else if (i_load <= min_boundary) {
@@ -206,5 +211,33 @@ public class GasTurbine extends Generator {
         
     }
     
+//   //load factor formulas
+    private void setLoadFactor(double i_temp) {
+//        TODO: Load Factor Testing (Maint)
+        if (i_temp < 2000.) {
+            lf_maxload_adj = Precision.round(i_temp/25., 2);
+            lf_EOH_adj = Precision.round(i_temp/2500., 2);
+            lf_peak_fact_adj = Precision.round(0.00002*i_temp-0.04);
+        } else {
+            lf_maxload_adj = Precision.round(i_temp/50., 2);
+            lf_EOH_adj = Precision.round(i_temp/1250., 2);
+            lf_peak_fact_adj = Precision.round(0.00002*i_temp-0.04);
+        }
+       
+    }
+    
+    public double[] lfDetails() {
+//        TODO: Load Factor Testing (Maint)
+        double[] lfDetails = new double[4];
+        
+        lfDetails[0] = lf_temp;
+        lfDetails[1] = lf_maxload_adj;
+        lfDetails[2] = lf_EOH_adj;
+        lfDetails[3] = lf_peak_fact_adj;
+        
+        return lfDetails;
+    }
+
+
     
 }
