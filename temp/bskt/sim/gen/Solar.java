@@ -46,7 +46,7 @@ public class Solar extends Generator {
         Ramp Rates are instant, change function generate to compensate & consider weather
         private 
         */
-        super(i_nameplate, i_nameplate*0.90, i_name, 0, 0, 0, i_owner, 0);
+        super(i_nameplate, i_nameplate*0.90, i_name, 0, 0, 12., i_owner, 0);
     }
     
     private double scaleHeatrate(double loadperc) {

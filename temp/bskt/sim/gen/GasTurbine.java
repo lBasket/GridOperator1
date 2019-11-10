@@ -67,7 +67,7 @@ public class GasTurbine extends Generator {
         */              
 
         super(0.98*i_nameplate , 1.02*i_nameplate , i_name, 7907., 53.07,
-             (1200 / i_nameplate), i_owner, 0.);
+             (1200 / i_nameplate), i_owner, 0.); //TODO: Is this right?
 //        Set up starting Operating Modes
         oper_modes = new ArrayList<>();
         PM = "GT";
@@ -212,19 +212,19 @@ public class GasTurbine extends Generator {
     }
     
 //   //load factor formulas
-    private void setLoadFactor(double i_temp) {
-//        TODO: Load Factor Testing (Maint)
-        if (i_temp < 2000.) {
-            lf_maxload_adj = Precision.round(i_temp/25., 2);
-            lf_EOH_adj = Precision.round(i_temp/2500., 2);
-            lf_peak_fact_adj = Precision.round(0.00002*i_temp-0.04);
-        } else {
-            lf_maxload_adj = Precision.round(i_temp/50., 2);
-            lf_EOH_adj = Precision.round(i_temp/1250., 2);
-            lf_peak_fact_adj = Precision.round(0.00002*i_temp-0.04);
-        }
-       
-    }
+//    private void setLoadFactor(double i_temp) {
+////        TODO: Load Factor Testing (Maint)
+//        if (i_temp < 2000.) {
+//            lf_maxload_adj = Precision.round(i_temp/25., 2);
+//            lf_EOH_adj = Precision.round(i_temp/2500., 2);
+//            lf_peak_fact_adj = Precision.round(0.00002*i_temp-0.04);
+//        } else {
+//            lf_maxload_adj = Precision.round(i_temp/50., 2);
+//            lf_EOH_adj = Precision.round(i_temp/1250., 2);
+//            lf_peak_fact_adj = Precision.round(0.00002*i_temp-0.04);
+//        }
+//       
+//    }
     
     public double[] lfDetails() {
 //        TODO: Load Factor Testing (Maint)
